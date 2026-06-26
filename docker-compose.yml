@@ -331,6 +331,33 @@ services:
       - pp-network
     restart: unless-stopped
 
+  # Blog Service
+  blog:
+    build:
+      context: ./services/blog
+      dockerfile: Dockerfile
+    container_name: pp-blog
+    ports:
+      - "3009:3009"
+    environment:
+      NODE_ENV: development
+      PORT: 3009
+      SERVICE_NAME: blog
+      DATABASE_URL: postgresql://pp_admin:secure_password_change_me@postgres:5432/publishing_platform
+      REDIS_URL: redis://redis:6379
+      EVENT_BUS_URL: http://event-bus:3001
+      JWT_SECRET: change_me_in_production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      event-bus:
+        condition: service_started
+    networks:
+      - pp-network
+    restart: unless-stopped
+
   # ==================== MONITORING & UTILITIES ====================
 
   # pgAdmin - Database management
