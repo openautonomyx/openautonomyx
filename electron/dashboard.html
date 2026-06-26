@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAutonomyX - macOS App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      text-align: center;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .status-box {
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .service-item:last-child {
+      border-bottom: none;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-indicator.running {
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+    }
+
+    .status-indicator.stopped {
+      background: #ef4444;
+    }
+
+    .status-indicator.loading {
+      background: #eab308;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .btn-admin {
+      grid-column: 1 / -1;
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-admin:hover {
+      background: #764ba2;
+    }
+
+    .info-panel {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 12px;
+      color: #667;
+      line-height: 1.6;
+    }
+
+    .info-panel strong {
+      color: #333;
+    }
+
+    .links {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .link-item {
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      font-size: 11px;
+      text-decoration: none;
+      color: #667eea;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .link-item:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .emoji {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="emoji">🚀</div>
+    <h1>OpenAutonomyX</h1>
+    <p class="subtitle">Vendor-Neutral Creative Publishing Platform</p>
+
+    <div class="status-box">
+      <strong style="display: block; margin-bottom: 15px;">Service Status</strong>
+      <div id="services-list">
+        <div class="service-item">
+          <span><span class="status-indicator loading"></span>Loading services...</span>
+          <span>--</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button class="btn-primary" onclick="startAll()">▶️ Start All</button>
+      <button class="btn-secondary" onclick="stopAll()">⏹️ Stop All</button>
+    </div>
+
+    <button class="btn-admin" onclick="openAdmin()">🎛️ Admin Panel</button>
+
+    <div class="info-panel">
+      <strong>📊 Services Running:</strong>
+      <div id="port-info" style="margin-top: 10px;">
+        <div>• API Gateway: http://localhost:3000</div>
+        <div>• Event Bus: http://localhost:3001</div>
+        <div>• PostgreSQL: localhost:5432</div>
+        <div>• Redis: localhost:6379</div>
+        <div>• Ollama (Local LLM): localhost:11434</div>
+      </div>
+    </div>
+
+    <div class="links">
+      <div class="link-item" onclick="openURL('http://localhost:3000')">🌐 API Gateway</div>
+      <div class="link-item" onclick="openURL('http://localhost:3000/admin-config.html')">⚙️ Admin Config</div>
+      <div class="link-item" onclick="openURL('http://localhost:5050')">📊 pgAdmin</div>
+      <div class="link-item" onclick="openURL('http://localhost:8081')">💾 Redis Commander</div>
+    </div>
+  </div>
+
+  <script>
+    async function startAll() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '⏳ Starting...';
+
+      try {
+        await window.api.startServices();
+        updateStatus();
+        btn.textContent = '✅ Started';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = '▶️ Start All';
+        }, 2000);
+      } catch (error) {
+        alert('Error: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = '▶️ Start All';
+      }
+    }
+
+    async function stopAll() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '⏳ Stopping...';
+
+      try {
+        await window.api.stopServices();
+        updateStatus();
+        btn.textContent = '✅ Stopped';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = '⏹️ Stop All';
+        }, 2000);
+      } catch (error) {
+        alert('Error: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = '⏹️ Stop All';
+      }
+    }
+
+    async function updateStatus() {
+      try {
+        const status = await window.api.getStatus();
+        const list = document.getElementById('services-list');
+        list.innerHTML = status.map(s => `
+          <div class="service-item">
+            <span>
+              <span class="status-indicator ${s.running ? 'running' : 'stopped'}"></span>
+              ${s.name}
+            </span>
+            <span style="font-size: 11px; color: #999;">
+              ${s.running ? '✓ Running' : '✗ Stopped'}
+            </span>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Status update error:', error);
+      }
+    }
+
+    function openAdmin() {
+      window.api.openAdmin();
+    }
+
+    function openURL(url) {
+      require('electron').shell.openExternal(url);
+    }
+
+    // Update status every 3 seconds
+    setInterval(updateStatus, 3000);
+    updateStatus();
+  </script>
+</body>
+</html>

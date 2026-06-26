@@ -1,0 +1,59 @@
+{
+  "name": "openautonomyx",
+  "version": "1.0.0",
+  "description": "Vendor-Neutral Creative Publishing Platform",
+  "main": "electron-main.js",
+  "author": "OpenAutonomyX",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --mac dmg",
+    "pack-all": "electron-builder -mwl"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.1.1"
+  },
+  "devDependencies": {
+    "electron": "^latest",
+    "electron-builder": "^latest"
+  },
+  "build": {
+    "appId": "com.openautonomyx.app",
+    "productName": "OpenAutonomyX",
+    "files": [
+      "electron-main.js",
+      "preload.js",
+      "dashboard.html",
+      "admin-config.html",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/icon.icns"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220,
+          "type": "file"
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 440
+      }
+    }
+  }
+}
